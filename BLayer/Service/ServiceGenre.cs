@@ -20,16 +20,12 @@ namespace BLayer.Service
             _repo = new GenreRepo(_moviesContext);
         }
 
-        public async Task<IEnumerable<Genre>> GetAll() => _repo.GetAll();
+        public IEnumerable<Genre> GetAll() => _repo.GetAll();
 
-        public async Task<IEnumerable<Genre> GetById(int id) => _repo.GetById(id);
+        public Genre GetById(int id) => _repo.GetById(id);
 
         public Genre? Add(Genre genre)
         {
-           if(genre == null)
-           {
-                throw new InvalidOperationException("Genre is null");
-           }
            _repo.Add(genre);
            return genre;
         }
