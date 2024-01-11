@@ -20,6 +20,8 @@ namespace DAL.Repos
 
         public Genre? GetById(int id) => GetAll()?.FirstOrDefault(x => x.Id == id);
 
+        public Genre? GetByName(string name) => GetAll()?.FirstOrDefault(y => y.Name == name);
+
         public Genre? Add(Genre genre)
         {
             if (genre == null)
@@ -51,9 +53,23 @@ namespace DAL.Repos
             }
         }
 
-        public void Delete(int id)
+        public void DeleteById(int id)
         {
             Genre? genre = GetById(id);
+            if (genre == null)
+            {
+                throw new ArgumentNullException(nameof(genre), "Genre not found");
+            }
+            else
+            {
+                _context.Genres.Remove(genre);
+                _context.SaveChanges();
+            }
+        }
+
+        public void DeleteByName(string identifier)
+        {
+            Genre? genre = GetByName(identifier);
             if (genre == null)
             {
                 throw new ArgumentNullException(nameof(genre), "Genre not found");
