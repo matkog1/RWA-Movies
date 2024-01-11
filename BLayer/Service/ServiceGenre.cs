@@ -22,14 +22,12 @@ namespace BLayer.Service
 
         public IEnumerable<Genre>? GetAll() => _repo.GetAll();
 
-        public Genre? GetById(int id) =>  _repo.GetById(id);
+        public Genre? GetById(int id) => _repo.GetById(id);
+
+        public Genre? GetByName(string name) => _repo.GetByName(name);
 
         public Genre? Add(Genre genre)
         {
-           if(genre == null)
-           {
-                throw new InvalidOperationException("Genre is null");
-           }
            _repo.Add(genre);
            return genre;
         }
@@ -54,14 +52,23 @@ namespace BLayer.Service
         }
 
 
-        public void Delete (int id)
+        public void DeleteById(int id)
         {
             Genre? foundGenre = _repo.GetById(id);
             if (foundGenre == null)
             {
                 throw new InvalidOperationException("Genre not found");
             }
-            _repo.Delete(foundGenre.Id);
+            _repo.DeleteById(foundGenre.Id);
+        }
+        public void DeleteByName(string name)
+        {
+            Genre? foundGenre = _repo.GetByName(name);
+            if (foundGenre == null)
+            {
+                throw new InvalidOperationException("Genre not found");
+            }
+            _repo.DeleteByName(foundGenre.Name);
         }
     }
 }
