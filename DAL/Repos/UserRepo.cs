@@ -20,6 +20,8 @@ namespace DAL.Repos
 
         public User? GetById(int id) => GetAll()?.FirstOrDefault(x => x.Id == id);
 
+        public User? GetByName(string firstName) => GetAll()?.FirstOrDefault(y => y.FirstName == firstName);
+
         public User? Add(User user)
         {
             if (user == null)
@@ -51,9 +53,23 @@ namespace DAL.Repos
             }
         }
 
-        public void Delete(int id)
+        public void DeleteById(int id)
         {
             User? user = GetById(id);
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user), "User not found");
+            }
+            else
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+            }
+        }
+
+        public void DeleteByName(string identifier)
+        {
+            User? user = GetByName(identifier);
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user), "User not found");
