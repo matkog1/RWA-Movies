@@ -24,6 +24,8 @@ namespace BLayer.Service
 
         public Tag? GetById(int id) => _repo.GetById(id);
 
+        public Tag? GetByName(string name) => _repo.GetByName(name);
+
         public Tag? Add(Tag tag)
         {
             if (tag == null)
@@ -54,14 +56,23 @@ namespace BLayer.Service
         }
 
 
-        public void Delete(int id)
+        public void DeleteById(int id)
         {
             Tag? foundTag = _repo.GetById(id);
             if (foundTag == null)
             {
                 throw new InvalidOperationException("Tag not found");
             }
-            _repo.Delete(foundTag.Id);
+            _repo.DeleteById(foundTag.Id);
+        }
+        public void DeleteByName(string name)
+        {
+            Tag? foundTag = _repo.GetByName(name);
+            if (foundTag == null)
+            {
+                throw new InvalidOperationException("Tag not found");
+            }
+            _repo.DeleteByName(foundTag.Name);
         }
     }
 }

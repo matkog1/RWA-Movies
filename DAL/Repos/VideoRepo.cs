@@ -20,6 +20,8 @@ namespace DAL.Repos
 
         public Video? GetById(int id) => GetAll()?.FirstOrDefault(x => x.Id == id);
 
+        public Video? GetByName(string name) => GetAll()?.FirstOrDefault(y => y.Name == name);
+
         public Video? Add(Video video)
         {
             if (video == null)
@@ -51,12 +53,26 @@ namespace DAL.Repos
             }
         }
 
-        public void Delete(int id)
+        public void DeleteById(int id)
         {
-            Video? video = GetById(id);
+            Video? genre = GetById(id);
+            if (genre == null)
+            {
+                throw new ArgumentNullException(nameof(genre), "Genre not found");
+            }
+            else
+            {
+                _context.Videos.Remove(genre);
+                _context.SaveChanges();
+            }
+        }
+
+        public void DeleteByName(string identifier)
+        {
+            Video? video = GetByName(identifier);
             if (video == null)
             {
-                throw new ArgumentNullException(nameof(video), "Video not found");
+                throw new ArgumentNullException(nameof(video), "Genre not found");
             }
             else
             {

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using DAL.APIRequests;
 using DAL.APIResponse;
+using Azure;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,35 +15,35 @@ namespace WebCoreAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenreController : ControllerBase
+    public class TagController : ControllerBase
     {
-        private ServiceGenre _service;
+        private ServiceTag _service;
 
-        public GenreController(ServiceGenre service)
+        public TagController(ServiceTag service)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         // GET: api/<GenreController>
         [HttpGet]
-        public ActionResult<IEnumerable<RequestGenre>> GetAllGenres()
+        public ActionResult<IEnumerable<RequestTag>> GetAllTags()
         {
             try
             {
-                var allGenres = _service.GetAll();
+                var allTags = _service.GetAll();
 
-                IList<RequestGenre> listOfGenres = allGenres.Select(genre => new RequestGenre
+                IList<RequestTag> listOfTags = allTags.Select(tag => new RequestTag
                 {
-                    Name = genre.Name,
-                    Description = genre.Description
+                    Name = tag.Name,
+
                 }).ToList();
 
-                if (!listOfGenres.Any())
+                if (!listOfTags.Any())
                 {
-                    return NotFound($"Currently there is no Genre in database!");
+                    return NotFound($"Currently there is no Users in database!");
                 }
 
-                return Ok(listOfGenres);
+                return Ok(listOfTags);
             }
             catch (Exception)
             {
@@ -52,23 +53,22 @@ namespace WebCoreAPI.Controllers
 
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
-        public ActionResult<RequestGenre> GetGenre(int id)
+        public ActionResult<RequestTag> GetTag(int id)
         {
             try
             {
-                var genreById = _service.GetById(id);
-                if (genreById == null)
+                var tagById = _service.GetById(id);
+                if (tagById == null)
                 {
-                    return NotFound($"Genre with ID number {id} not found.");
+                    return NotFound($"User with ID number: {id} not found.");
                 }
                 else
                 {
-                    var genre = new RequestGenre
+                    var tag = new RequestTag
                     {
-                        Name = genreById.Name,
-                        Description = genreById.Description
+                        Name = tagById.Name,
                     };
-                    return Ok(genre);
+                    return Ok(tag);
                 }
             }
             catch (Exception)
@@ -80,7 +80,7 @@ namespace WebCoreAPI.Controllers
 
         // POST api/<GenreController>
         [HttpPost]
-        public ActionResult<RequestGenre> Post(RequestGenre request)
+        public ActionResult<RequestTag> Post(RequestTag request)
         {
             try
             {
@@ -89,20 +89,19 @@ namespace WebCoreAPI.Controllers
                     BadRequest($"Request object is null.");
                 }
 
-                var genreExists = _service?.GetAll()?.FirstOrDefault(g => g.Name.ToLower() == request.Name.ToLower());
+                var tagExists = _service?.GetAll()?.FirstOrDefault(g => g.Name.ToLower() == request.Name.ToLower());
 
-                if (genreExists != null)
+                if (tagExists != null)
                 {
-                    return Conflict($"Genre with the name '{request.Name}' already exists");
+                    return Conflict($"User with the name '{request.Name}' already exists");
                 }
                 else
                 {
-                    var genre = new Genre
+                    var tag = new Tag
                     {
-                        Name = request.Name,
-                        Description = request.Description
-                    };
-                    _service.Add(genre);
+                        Name = request.Name
+                };
+                    _service.Add(tag);
                     return Ok(request);
                 }
             }
@@ -111,10 +110,10 @@ namespace WebCoreAPI.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
-       
+
         // PUT api/<GenreController>/5
         [HttpPut("{id}")]
-        public ActionResult<RequestGenre> Put(int id, RequestGenre request)
+        public ActionResult<RequestTag> Put(int id, RequestTag request)
         {
             try
             {
@@ -123,18 +122,17 @@ namespace WebCoreAPI.Controllers
                     BadRequest($"Request object is null.");
                 }
 
-                var foundGenre = _service.GetById(id);
+                var foundTag = _service.GetById(id);
 
-                if (foundGenre == null)
+                if (foundTag == null)
                 {
-                    return Conflict($"Genre with ID number {id} not found!");
+                    return Conflict($"User with ID number {id} not found!");
                 }
                 else
                 {
-                    foundGenre.Name = request.Name;
-                    foundGenre.Description = request.Description;
-                    _service.Update(foundGenre);
-                    return Ok(foundGenre);
+                    foundTag.Name = request.Name;
+                    _service.Update(foundTag);
+                    return Ok(foundTag);
                 }
             }
             catch (Exception)
@@ -145,39 +143,39 @@ namespace WebCoreAPI.Controllers
 
         // DELETE api/<GenreController>/5
         [HttpDelete("identifier")]
-        public ActionResult<RequestGenre> Delete(string identifier)
+        public ActionResult<RequestTag> Delete(string identifier)
         {
             try
             {
                 int id;
                 bool isNumeric = int.TryParse(identifier, out id);
 
-                Genre foundGenre = new Genre();
+                Tag foundTag = new Tag();
 
                 if (isNumeric)
                 {
-                    foundGenre = _service.GetById(id);
-                    if (foundGenre == null)
+                    foundTag = _service.GetById(id);
+                    if (foundTag == null)
                     {
-                        return NotFound($"Genre {foundGenre.Name} with ID  '{identifier}' not found!");
+                        return NotFound($"Tag: {foundTag.Name} with ID  '{identifier}' not found!");
                     }
                     else
                     {
-                        _service.DeleteById(foundGenre.Id);
-                        return Ok($"Genre {foundGenre.Name} with ID {foundGenre.Id} has been deleted!");
+                        _service.DeleteById(foundTag.Id);
+                        return Ok($"Genre {foundTag.Name} with ID {foundTag.Id} has been deleted!");
                     }
                 }
                 else
                 {
-                    foundGenre = _service.GetByName(identifier);
-                    if (foundGenre == null)
+                    foundTag = _service.GetByName(identifier);
+                    if (foundTag == null)
                     {
                         return NotFound($"Genre with ID or name '{identifier}' not found!");
                     }
                     else
                     {
-                        _service.DeleteByName(foundGenre.Name);
-                        return Ok($"Genre {foundGenre.Name} has been deleted!");
+                        _service.DeleteByName(foundTag.Name);
+                        return Ok($"Genre {foundTag.Name} has been deleted!");
                     }
                 }
             }
