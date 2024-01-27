@@ -14,35 +14,35 @@ namespace WebCoreAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenreController : ControllerBase
+    public class CountryController : ControllerBase
     {
-        private ServiceGenre _service;
+        private ServiceCountry _service;
 
-        public GenreController(ServiceGenre service)
+        public CountryController(ServiceCountry service)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         // GET: api/<GenreController>
         [HttpGet]
-        public ActionResult<IEnumerable<RequestGenre>> GetAllGenres()
+        public ActionResult<IEnumerable<RequestCountry>> GetAllCountries()
         {
             try
             {
-                var allGenres = _service.GetAll();
+                var allCountries = _service.GetAll();
 
-                IList<RequestGenre> listOfGenres = allGenres.Select(genre => new RequestGenre
+                IList<RequestCountry> listOfCountries = allCountries.Select(country => new RequestCountry
                 {
-                    Name = genre.Name,
-                    Description = genre.Description
+                    Code = country.Code,
+                    Name = country.Name,
                 }).ToList();
 
-                if (!listOfGenres.Any())
+                if (!allCountries.Any())
                 {
-                    return NotFound($"Currently there is no Genre in database!");
+                    return NotFound($"Currently there is no Country in database!");
                 }
 
-                return Ok(listOfGenres);
+                return Ok(allCountries);
             }
             catch (Exception)
             {
@@ -52,35 +52,34 @@ namespace WebCoreAPI.Controllers
 
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
-        public ActionResult<RequestGenre> GetGenre(int id)
+        public ActionResult<RequestCountry> GetCountry(int id)
         {
             try
             {
-                var genreById = _service.GetById(id);
-                if (genreById == null)
+                var countryById = _service.GetById(id);
+                if (countryById == null)
                 {
-                    return NotFound($"Genre with ID number {id} not found.");
+                    return NotFound($"Country with ID number {id} not found.");
                 }
                 else
                 {
-                    var genre = new RequestGenre
+                    var country = new RequestCountry
                     {
-                        Name = genreById.Name,
-                        Description = genreById.Description
+                        Code = countryById.Code,
+                        Name = countryById.Name,
                     };
-                    return Ok(genre);
+                    return Ok(country);
                 }
             }
             catch (Exception)
             {
-
                 return StatusCode(500, "Internal Server Error");
             }
         }
 
         // POST api/<GenreController>
         [HttpPost]
-        public ActionResult<RequestGenre> Post(RequestGenre request)
+        public ActionResult<RequestCountry> Post(RequestCountry request)
         {
             try
             {
@@ -89,20 +88,20 @@ namespace WebCoreAPI.Controllers
                     BadRequest($"Request object is null.");
                 }
 
-                var genreExists = _service?.GetAll()?.FirstOrDefault(g => g.Name.ToLower() == request.Name.ToLower());
+                var countryExists = _service?.GetAll()?.FirstOrDefault(country => country.Name.ToLower() == request.Name.ToLower());
 
-                if (genreExists != null)
+                if (countryExists != null)
                 {
                     return Conflict($"Genre with the name '{request.Name}' already exists");
                 }
                 else
                 {
-                    var genre = new Genre
+                    var country = new Country
                     {
+                        Code = request.Code,
                         Name = request.Name,
-                        Description = request.Description
                     };
-                    _service.Add(genre);
+                    _service.Add(country);
                     return Ok(request);
                 }
             }
@@ -111,10 +110,10 @@ namespace WebCoreAPI.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
-       
+
         // PUT api/<GenreController>/5
         [HttpPut("{id}")]
-        public ActionResult<RequestGenre> Put(int id, RequestGenre request)
+        public ActionResult<RequestCountry> Put(int id, RequestCountry request)
         {
             try
             {
@@ -123,18 +122,18 @@ namespace WebCoreAPI.Controllers
                     BadRequest($"Request object is null.");
                 }
 
-                var foundGenre = _service.GetById(id);
+                var foundCountry = _service.GetById(id);
 
-                if (foundGenre == null)
+                if (foundCountry == null)
                 {
-                    return Conflict($"Genre with ID number {id} not found!");
+                    return Conflict($"Country with ID number {id} not found!");
                 }
                 else
                 {
-                    foundGenre.Name = request.Name;
-                    foundGenre.Description = request.Description;
-                    _service.Update(foundGenre);
-                    return Ok(foundGenre);
+                    foundCountry.Code = request.Code;
+                    foundCountry.Name = request.Name;
+                    _service.Update(foundCountry);
+                    return Ok(foundCountry);
                 }
             }
             catch (Exception)
@@ -145,39 +144,39 @@ namespace WebCoreAPI.Controllers
 
         // DELETE api/<GenreController>/5
         [HttpDelete("identifier")]
-        public ActionResult<RequestGenre> Delete(string identifier)
+        public ActionResult<RequestCountry> Delete(string identifier)
         {
             try
             {
                 int id;
                 bool isNumeric = int.TryParse(identifier, out id);
 
-                Genre foundGenre = new Genre();
+                Country foundCountry = new Country();
 
                 if (isNumeric)
                 {
-                    foundGenre = _service.GetById(id);
-                    if (foundGenre == null)
+                    foundCountry = _service.GetById(id);
+                    if (foundCountry == null)
                     {
-                        return NotFound($"Genre {foundGenre.Name} with ID  '{identifier}' not found!");
+                        return NotFound($"Genre {foundCountry.Name} with ID  '{identifier}' not found!");
                     }
                     else
                     {
-                        _service.DeleteById(foundGenre.Id);
-                        return Ok($"Genre {foundGenre.Name} with ID {foundGenre.Id} has been deleted!");
+                        _service.DeleteById(foundCountry.Id);
+                        return Ok($"Country {foundCountry.Name} with ID {foundCountry.Id} has been deleted!");
                     }
                 }
                 else
                 {
-                    foundGenre = _service.GetByName(identifier);
-                    if (foundGenre == null)
+                    foundCountry = _service.GetByName(identifier);
+                    if (foundCountry == null)
                     {
-                        return NotFound($"Genre with ID or name '{identifier}' not found!");
+                        return NotFound($"Found with ID or name '{identifier}' not found!");
                     }
                     else
                     {
-                        _service.DeleteByName(foundGenre.Name);
-                        return Ok($"Genre {foundGenre.Name} has been deleted!");
+                        _service.DeleteByName(foundCountry.Name);
+                        return Ok($"Genre {foundCountry.Name} has been deleted!");
                     }
                 }
             }

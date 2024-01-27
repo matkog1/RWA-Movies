@@ -20,6 +20,8 @@ namespace DAL.Repos
 
         public Tag? GetById(int id) => GetAll()?.FirstOrDefault(x => x.Id == id);
 
+        public Tag? GetByName(string name) => GetAll()?.FirstOrDefault(y => y.Name == name);
+
         public Tag? Add(Tag tag)
         {
             if (tag == null)
@@ -51,12 +53,26 @@ namespace DAL.Repos
             }
         }
 
-        public void Delete(int id)
+        public void DeleteById(int id)
         {
             Tag? tag = GetById(id);
             if (tag == null)
             {
-                throw new ArgumentNullException(nameof(tag), "Tag not found");
+                throw new ArgumentNullException(nameof(tag), "Genre not found");
+            }
+            else
+            {
+                _context.Tags.Remove(tag);
+                _context.SaveChanges();
+            }
+        }
+
+        public void DeleteByName(string identifier)
+        {
+            Tag? tag = GetByName(identifier);
+            if (tag == null)
+            {
+                throw new ArgumentNullException(nameof(tag), "Genre not found");
             }
             else
             {

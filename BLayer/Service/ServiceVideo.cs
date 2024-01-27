@@ -23,6 +23,7 @@ namespace BLayer.Service
         public IEnumerable<Video>? GetAll() => _repo.GetAll();
 
         public Video? GetById(int id) => _repo.GetById(id);
+        public Video? GetByName(string name) => _repo.GetByName(name);
 
         public Video? Add(Video video)
         {
@@ -54,14 +55,23 @@ namespace BLayer.Service
         }
 
 
-        public void Delete(int id)
+        public void DeleteById(int id)
         {
             Video? foundVideo = _repo.GetById(id);
             if (foundVideo == null)
             {
-                throw new InvalidOperationException("Video not found");
+                throw new InvalidOperationException("Genre not found");
             }
-            _repo.Delete(foundVideo.Id);
+            _repo.DeleteById(foundVideo.Id);
+        }
+        public void DeleteByName(string name)
+        {
+            Video? foundVideo = _repo.GetByName(name);
+            if (foundVideo == null)
+            {
+                throw new InvalidOperationException("Genre not found");
+            }
+            _repo.DeleteByName(foundVideo.Name);
         }
     }
 }

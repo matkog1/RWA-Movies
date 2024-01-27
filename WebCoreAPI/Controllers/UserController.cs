@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
-using WebCoreAPI.APIRequests;
+using DAL.APIRequests;
+using DAL.APIResponse;
+using Utils;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,7 +26,7 @@ namespace WebCoreAPI.Controllers
 
         // GET: api/<GenreController>
         [HttpGet]
-        public ActionResult<IEnumerable<RequestUser>> GetAllGenres()
+        public ActionResult<IEnumerable<RequestUser>> GetAllUsers()
         {
             try
             {
@@ -56,7 +58,7 @@ namespace WebCoreAPI.Controllers
 
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
-        public ActionResult<RequestUser> GetGenre(int id)
+        public ActionResult<RequestUser> GetUser(int id)
         {
             try
             {
@@ -75,6 +77,7 @@ namespace WebCoreAPI.Controllers
                         Email = userById.Email,
                         Phone = userById.Phone,
                         CountryId = userById.CountryOfResidenceId,
+                        
                     };
                     return Ok(user);
                 }
@@ -92,27 +95,32 @@ namespace WebCoreAPI.Controllers
         {
             try
             {
+                (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();
+                string hashedPassword = SecurityUtils.HashPassword(request.Password, salt);
+
                 if (request == null)
                 {
                     BadRequest($"Request object is null.");
                 }
 
-                var userExists = _service?.GetAll()?.FirstOrDefault(g => g.FirstName.ToLower() == request.FirstName.ToLower());
+                var userExists = _service?.GetAll()?.FirstOrDefault(g => g.Username.ToLower() == request.Username.ToLower());
 
                 if (userExists != null)
                 {
-                    return Conflict($"User with the name '{request.FirstName}' already exists");
+                    return Conflict($"User with username '{request.Username}' already exists");
                 }
                 else
                 {
                     var user = new User
                     {
-                        FirstName = userExists.FirstName,
-                        LastName = userExists.LastName,
-                        Username = userExists.Username,
-                        Email = userExists.Email,
-                        Phone = userExists.Phone,
-                        CountryOfResidenceId = userExists.CountryOfResidenceId,
+                        FirstName = request.FirstName,
+                        LastName = request.LastName,
+                        Username = request.Username,
+                        Email = request.Email,
+                        Phone = request.Phone,
+                        CountryOfResidenceId = request.CountryId,
+                        PwdHash = hashedPassword,
+                        PwdSalt = saltString
                     };
                     _service.Add(user);
                     return Ok(request);

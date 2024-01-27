@@ -55,7 +55,6 @@ namespace BLayer.Service
             return updatedUser;
         }
 
-
         public void DeleteById(int id)
         {
             User? foundUser = _repo.GetById(id);

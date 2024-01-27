@@ -11,6 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ServiceGenre>();
+builder.Services.AddScoped<ServiceTag>();
+builder.Services.AddScoped<ServiceVideo>();
+builder.Services.AddScoped<ServiceUser>();
+builder.Services.AddScoped<ServiceCountry>();
+
 
 
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
