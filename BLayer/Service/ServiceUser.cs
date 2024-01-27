@@ -23,6 +23,8 @@ namespace BLayer.Service
         public IEnumerable<User>? GetAll() => _repo.GetAll();
 
         public User? GetById(int id) => _repo.GetById(id);
+        
+        public User? GetByName(string name) => _repo.GetByName(name);
 
         public User? Add(User user)
         {
@@ -54,14 +56,23 @@ namespace BLayer.Service
         }
 
 
-        public void Delete(int id)
+        public void DeleteById(int id)
         {
             User? foundUser = _repo.GetById(id);
             if (foundUser == null)
             {
-                throw new InvalidOperationException("User not found");
+                throw new InvalidOperationException("Genre not found");
             }
-            _repo.Delete(foundUser.Id);
+            _repo.DeleteById(foundUser.Id);
+        }
+        public void DeleteByName(string name)
+        {
+            User? foundUser = _repo.GetByName(name);
+            if (foundUser == null)
+            {
+                throw new InvalidOperationException("Genre not found");
+            }
+            _repo.DeleteByName(foundUser.FirstName);
         }
     }
 }
