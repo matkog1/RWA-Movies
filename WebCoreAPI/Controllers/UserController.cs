@@ -153,6 +153,7 @@ namespace WebCoreAPI.Controllers
                 {
                     foundUser.FirstName = request.FirstName;
                     foundUser.LastName = request.LastName;
+                    foundUser.Username = request.Username;
                     foundUser.Email = request.Email;
                     foundUser.Phone = request.Phone;
                     foundUser.CountryOfResidenceId = request.CountryId;
@@ -182,12 +183,12 @@ namespace WebCoreAPI.Controllers
                     founderUser = _service.GetById(id);
                     if (founderUser == null)
                     {
-                        return NotFound($"User: {founderUser.FirstName} with ID  '{identifier}' not found!");
+                        return NotFound($"User: {founderUser.Username} with ID  '{identifier}' not found!");
                     }
                     else
                     {
                         _service.DeleteById(founderUser.Id);
-                        return Ok($"Genre {founderUser.FirstName} with ID {founderUser.Id} has been deleted!");
+                        return Ok($"User {founderUser.Username} with ID {founderUser.Id} has been deleted!");
                     }
                 }
                 else
@@ -195,12 +196,12 @@ namespace WebCoreAPI.Controllers
                     founderUser = _service.GetByName(identifier);
                     if (founderUser == null)
                     {
-                        return NotFound($"Genre with ID or name '{identifier}' not found!");
+                        return NotFound($"User with  username '{identifier}' not found!");
                     }
                     else
                     {
-                        _service.DeleteByName(founderUser.FirstName);
-                        return Ok($"Genre {founderUser.FirstName} has been deleted!");
+                        _service.DeleteByName(founderUser.Username);
+                        return Ok($"User {founderUser.Username} has been deleted!");
                     }
                 }
             }

@@ -45,7 +45,7 @@ namespace WebCoreAPI.Controllers
 
                 if (!listOfVideos.Any())
                 {
-                    return NotFound($"Currently there is no Users in database!");
+                    return NotFound($"Currently there is no Videos in database!");
                 }
 
                 return Ok(listOfVideos);
@@ -104,7 +104,7 @@ namespace WebCoreAPI.Controllers
 
                 if (videoExists != null)
                 {
-                    return Conflict($"User with the name '{request.Name}' already exists");
+                    return Conflict($"Video with the name '{request.Name}' already exists");
                 }
                 else
                 {
@@ -143,7 +143,7 @@ namespace WebCoreAPI.Controllers
 
                 if (foundVideo == null)
                 {
-                    return Conflict($"User with ID number {id} not found!");
+                    return Conflict($"Video with ID number {id} not found!");
                 }
                 else
                 {
@@ -179,12 +179,12 @@ namespace WebCoreAPI.Controllers
                     foundVideo = _service.GetById(id);
                     if (foundVideo == null)
                     {
-                        return NotFound($"User: {foundVideo.Name} with ID  '{identifier}' not found!");
+                        return NotFound($"Video: {foundVideo.Name} with ID  '{identifier}' not found!");
                     }
                     else
                     {
                         _service.DeleteById(foundVideo.Id);
-                        return Ok($"Genre {foundVideo.Name} with ID {foundVideo.Id} has been deleted!");
+                        return Ok($"Video {foundVideo.Name} with ID {foundVideo.Id} has been deleted!");
                     }
                 }
                 else
@@ -192,12 +192,12 @@ namespace WebCoreAPI.Controllers
                     foundVideo = _service.GetByName(identifier);
                     if (foundVideo == null)
                     {
-                        return NotFound($"Genre with ID or name '{identifier}' not found!");
+                        return NotFound($"Video with ID or name '{identifier}' not found!");
                     }
                     else
                     {
                         _service.DeleteByName(foundVideo.Name);
-                        return Ok($"Genre {foundVideo.Name} has been deleted!");
+                        return Ok($"Video {foundVideo.Name} has been deleted!");
                     }
                 }
             }

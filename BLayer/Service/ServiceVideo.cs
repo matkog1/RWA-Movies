@@ -60,7 +60,7 @@ namespace BLayer.Service
             Video? foundVideo = _repo.GetById(id);
             if (foundVideo == null)
             {
-                throw new InvalidOperationException("Genre not found");
+                throw new InvalidOperationException("Video not found");
             }
             _repo.DeleteById(foundVideo.Id);
         }
@@ -69,7 +69,7 @@ namespace BLayer.Service
             Video? foundVideo = _repo.GetByName(name);
             if (foundVideo == null)
             {
-                throw new InvalidOperationException("Genre not found");
+                throw new InvalidOperationException("Video not found");
             }
             _repo.DeleteByName(foundVideo.Name);
         }

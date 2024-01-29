@@ -58,7 +58,7 @@ namespace DAL.Repos
             Tag? tag = GetById(id);
             if (tag == null)
             {
-                throw new ArgumentNullException(nameof(tag), "Genre not found");
+                throw new ArgumentNullException(nameof(tag), "Tag not found");
             }
             else
             {
@@ -72,7 +72,7 @@ namespace DAL.Repos
             Tag? tag = GetByName(identifier);
             if (tag == null)
             {
-                throw new ArgumentNullException(nameof(tag), "Genre not found");
+                throw new ArgumentNullException(nameof(tag), "Tag not found");
             }
             else
             {
