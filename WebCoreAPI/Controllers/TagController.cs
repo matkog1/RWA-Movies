@@ -40,7 +40,7 @@ namespace WebCoreAPI.Controllers
 
                 if (!listOfTags.Any())
                 {
-                    return NotFound($"Currently there is no Users in database!");
+                    return NotFound($"Currently there is no Tags in database!");
                 }
 
                 return Ok(listOfTags);
@@ -60,7 +60,7 @@ namespace WebCoreAPI.Controllers
                 var tagById = _service.GetById(id);
                 if (tagById == null)
                 {
-                    return NotFound($"User with ID number: {id} not found.");
+                    return NotFound($"Tag with ID number: {id} not found.");
                 }
                 else
                 {
@@ -93,17 +93,24 @@ namespace WebCoreAPI.Controllers
 
                 if (tagExists != null)
                 {
-                    return Conflict($"User with the name '{request.Name}' already exists");
+                    return Conflict($"Tag with the name '{request.Name}' already exists");
                 }
-                else
+
+                var tag = new Tag
                 {
-                    var tag = new Tag
-                    {
-                        Name = request.Name
+                    Name = request.Name
                 };
-                    _service.Add(tag);
-                    return Ok(request);
-                }
+               
+                _service.Add(tag);
+                
+                var response = new ResponseTag
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                };
+                
+                return Ok(response);
+
             }
             catch (Exception)
             {
@@ -126,7 +133,7 @@ namespace WebCoreAPI.Controllers
 
                 if (foundTag == null)
                 {
-                    return Conflict($"User with ID number {id} not found!");
+                    return Conflict($"Tag with ID number {id} not found!");
                 }
                 else
                 {
@@ -162,7 +169,7 @@ namespace WebCoreAPI.Controllers
                     else
                     {
                         _service.DeleteById(foundTag.Id);
-                        return Ok($"Genre {foundTag.Name} with ID {foundTag.Id} has been deleted!");
+                        return Ok($"Tag {foundTag.Name} with ID {foundTag.Id} has been deleted!");
                     }
                 }
                 else
@@ -170,12 +177,12 @@ namespace WebCoreAPI.Controllers
                     foundTag = _service.GetByName(identifier);
                     if (foundTag == null)
                     {
-                        return NotFound($"Genre with ID or name '{identifier}' not found!");
+                        return NotFound($"Tag with ID or name '{identifier}' not found!");
                     }
                     else
                     {
                         _service.DeleteByName(foundTag.Name);
-                        return Ok($"Genre {foundTag.Name} has been deleted!");
+                        return Ok($"Tag {foundTag.Name} has been deleted!");
                     }
                 }
             }

@@ -60,7 +60,7 @@ namespace BLayer.Service
             User? foundUser = _repo.GetById(id);
             if (foundUser == null)
             {
-                throw new InvalidOperationException("Genre not found");
+                throw new InvalidOperationException("User not found");
             }
             _repo.DeleteById(foundUser.Id);
         }
@@ -69,9 +69,9 @@ namespace BLayer.Service
             User? foundUser = _repo.GetByName(name);
             if (foundUser == null)
             {
-                throw new InvalidOperationException("Genre not found");
+                throw new InvalidOperationException("User not found");
             }
-            _repo.DeleteByName(foundUser.FirstName);
+            _repo.DeleteByName(foundUser.Username);
         }
     }
 }

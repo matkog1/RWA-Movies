@@ -20,7 +20,7 @@ namespace DAL.Repos
 
         public User? GetById(int id) => GetAll()?.FirstOrDefault(x => x.Id == id);
 
-        public User? GetByName(string firstName) => GetAll()?.FirstOrDefault(y => y.FirstName == firstName);
+        public User? GetByName(string userName) => GetAll()?.FirstOrDefault(y => y.Username == userName);
 
         public User? Add(User user)
         {

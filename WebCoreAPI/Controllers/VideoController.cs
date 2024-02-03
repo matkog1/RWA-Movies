@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using DAL.APIRequests;
 using DAL.APIResponse;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,14 +20,28 @@ namespace WebCoreAPI.Controllers
     {
         private ServiceVideo _service;
 
-        public VideoController(ServiceVideo service)
+        private  ServiceVideo _videoService;
+        private  ServiceTag _tagService;
+        private  ServiceGenre _genreService;
+        private  ServiceImage _imageService;
+
+        public VideoController(ServiceVideo service, ServiceTag tagService, ServiceImage imageService, ServiceGenre genreService)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
+            _genreService = genreService ?? throw new ArgumentNullException(nameof(_genreService));
+            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
+            _tagService = tagService ?? throw new ArgumentNullException(nameof(tagService));
         }
 
-        // GET: api/<GenreController>
+        [HttpGet("[action]")]
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<Video>> Search(int page, int size, string searchName, string sortBy, string orderingDirection)
+        {
+            return Ok("Ok");
+        }
+
         [HttpGet]
-        public ActionResult<IEnumerable<RequestVideo>> GetAllGenres()
+        public ActionResult<IEnumerable<RequestVideo>> GetAllVideos()
         {
             try
             {
@@ -45,7 +61,7 @@ namespace WebCoreAPI.Controllers
 
                 if (!listOfVideos.Any())
                 {
-                    return NotFound($"Currently there is no Users in database!");
+                    return NotFound($"Currently there is no Videos in database!");
                 }
 
                 return Ok(listOfVideos);
@@ -58,7 +74,7 @@ namespace WebCoreAPI.Controllers
 
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
-        public ActionResult<RequestVideo> GetGenre(int id)
+        public ActionResult<RequestVideo> GetVideo(int id)
         {
             try
             {
@@ -104,7 +120,7 @@ namespace WebCoreAPI.Controllers
 
                 if (videoExists != null)
                 {
-                    return Conflict($"User with the name '{request.Name}' already exists");
+                    return Conflict($"Video with the name '{request.Name}' already exists");
                 }
                 else
                 {
@@ -143,7 +159,7 @@ namespace WebCoreAPI.Controllers
 
                 if (foundVideo == null)
                 {
-                    return Conflict($"User with ID number {id} not found!");
+                    return Conflict($"Video with ID number {id} not found!");
                 }
                 else
                 {
@@ -179,12 +195,12 @@ namespace WebCoreAPI.Controllers
                     foundVideo = _service.GetById(id);
                     if (foundVideo == null)
                     {
-                        return NotFound($"User: {foundVideo.Name} with ID  '{identifier}' not found!");
+                        return NotFound($"Video: {foundVideo.Name} with ID  '{identifier}' not found!");
                     }
                     else
                     {
                         _service.DeleteById(foundVideo.Id);
-                        return Ok($"Genre {foundVideo.Name} with ID {foundVideo.Id} has been deleted!");
+                        return Ok($"Video {foundVideo.Name} with ID {foundVideo.Id} has been deleted!");
                     }
                 }
                 else
@@ -192,12 +208,12 @@ namespace WebCoreAPI.Controllers
                     foundVideo = _service.GetByName(identifier);
                     if (foundVideo == null)
                     {
-                        return NotFound($"Genre with ID or name '{identifier}' not found!");
+                        return NotFound($"Video with ID or name '{identifier}' not found!");
                     }
                     else
                     {
                         _service.DeleteByName(foundVideo.Name);
-                        return Ok($"Genre {foundVideo.Name} has been deleted!");
+                        return Ok($"Video {foundVideo.Name} has been deleted!");
                     }
                 }
             }

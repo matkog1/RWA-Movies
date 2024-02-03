@@ -25,14 +25,15 @@ namespace WebCoreAPI.Controllers
 
         // GET: api/<GenreController>
         [HttpGet]
-        public ActionResult<IEnumerable<RequestGenre>> GetAllGenres()
+        public ActionResult<IEnumerable<ResponseGenre>> GetAllGenres()
         {
             try
             {
                 var allGenres = _service.GetAll();
 
-                IList<RequestGenre> listOfGenres = allGenres.Select(genre => new RequestGenre
+                IList<ResponseGenre> listOfGenres = allGenres.Select(genre => new ResponseGenre
                 {
+                    Id = genre.Id,
                     Name = genre.Name,
                     Description = genre.Description
                 }).ToList();
@@ -52,7 +53,7 @@ namespace WebCoreAPI.Controllers
 
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
-        public ActionResult<RequestGenre> GetGenre(int id)
+        public ActionResult<ResponseGenre> GetGenre(int id)
         {
             try
             {
@@ -63,8 +64,9 @@ namespace WebCoreAPI.Controllers
                 }
                 else
                 {
-                    var genre = new RequestGenre
+                    var genre = new ResponseGenre
                     {
+                        Id= genreById.Id,
                         Name = genreById.Name,
                         Description = genreById.Description
                     };
@@ -95,16 +97,23 @@ namespace WebCoreAPI.Controllers
                 {
                     return Conflict($"Genre with the name '{request.Name}' already exists");
                 }
-                else
+                
+                var genre = new Genre
                 {
-                    var genre = new Genre
-                    {
-                        Name = request.Name,
-                        Description = request.Description
-                    };
-                    _service.Add(genre);
-                    return Ok(request);
-                }
+                    Name = request.Name,
+                    Description = request.Description
+                };
+                
+                _service.Add(genre);
+
+                var response = new ResponseGenre
+                {
+                    Id = genre.Id,
+                    Name = genre.Name,
+                    Description = genre.Description
+                };
+                
+                return Ok(response);
             }
             catch (Exception)
             {
@@ -132,9 +141,17 @@ namespace WebCoreAPI.Controllers
                 else
                 {
                     foundGenre.Name = request.Name;
-                    foundGenre.Description = request.Description;
+                    foundGenre.Description = request.Description;    
                     _service.Update(foundGenre);
-                    return Ok(foundGenre);
+
+                    var response = new ResponseGenre
+                    {
+                        Id = foundGenre.Id,
+                        Name = foundGenre.Name,
+                        Description = foundGenre.Description
+                    };
+                    
+                    return Ok(response);
                 }
             }
             catch (Exception)
@@ -145,7 +162,7 @@ namespace WebCoreAPI.Controllers
 
         // DELETE api/<GenreController>/5
         [HttpDelete("identifier")]
-        public ActionResult<RequestGenre> Delete(string identifier)
+        public ActionResult<ResponseGenre> Delete(string identifier)
         {
             try
             {

@@ -56,7 +56,7 @@ namespace DAL.Repos
             Image? image = GetById(id);
             if (image == null)
             {
-                throw new ArgumentNullException(nameof(image), "Genre not found");
+                throw new ArgumentNullException(nameof(image), "Image not found");
             }
             else
             {

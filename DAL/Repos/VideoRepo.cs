@@ -58,7 +58,7 @@ namespace DAL.Repos
             Video? genre = GetById(id);
             if (genre == null)
             {
-                throw new ArgumentNullException(nameof(genre), "Genre not found");
+                throw new ArgumentNullException(nameof(genre), "Video not found");
             }
             else
             {
@@ -72,7 +72,7 @@ namespace DAL.Repos
             Video? video = GetByName(identifier);
             if (video == null)
             {
-                throw new ArgumentNullException(nameof(video), "Genre not found");
+                throw new ArgumentNullException(nameof(video), "Video not found");
             }
             else
             {
