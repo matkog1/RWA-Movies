@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using DAL.APIRequests;
 using DAL.APIResponse;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,14 +20,28 @@ namespace WebCoreAPI.Controllers
     {
         private ServiceVideo _service;
 
-        public VideoController(ServiceVideo service)
+        private  ServiceVideo _videoService;
+        private  ServiceTag _tagService;
+        private  ServiceGenre _genreService;
+        private  ServiceImage _imageService;
+
+        public VideoController(ServiceVideo service, ServiceTag tagService, ServiceImage imageService, ServiceGenre genreService)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
+            _genreService = genreService ?? throw new ArgumentNullException(nameof(_genreService));
+            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
+            _tagService = tagService ?? throw new ArgumentNullException(nameof(tagService));
         }
 
-        // GET: api/<GenreController>
+        [HttpGet("[action]")]
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<Video>> Search(int page, int size, string searchName, string sortBy, string orderingDirection)
+        {
+            return Ok("Ok");
+        }
+
         [HttpGet]
-        public ActionResult<IEnumerable<RequestVideo>> GetAllGenres()
+        public ActionResult<IEnumerable<RequestVideo>> GetAllVideos()
         {
             try
             {
@@ -58,7 +74,7 @@ namespace WebCoreAPI.Controllers
 
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
-        public ActionResult<RequestVideo> GetGenre(int id)
+        public ActionResult<RequestVideo> GetVideo(int id)
         {
             try
             {
