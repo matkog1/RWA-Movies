@@ -20,7 +20,7 @@ builder.Services.AddScoped<ServiceCountry>();
 
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
 {
-    options.UseSqlServer("name=ConnectionStrings:RwaMoviesConnStr");
+    options.UseSqlServer("server=.;Database=RwaMovies;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
 });
 
 var app = builder.Build();

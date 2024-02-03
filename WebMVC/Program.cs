@@ -1,5 +1,6 @@
 using BLayer.Service;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,16 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<RwaMoviesContext>();
 builder.Services.AddScoped<ServiceGenre>();
+builder.Services.AddScoped<ServiceVideo>();
+builder.Services.AddScoped<ServiceCountry>();
+builder.Services.AddScoped<ServiceUser>();
+builder.Services.AddScoped<ServiceTag>();
+
+
+builder.Services.AddDbContext<RwaMoviesContext>(options =>
+{
+    options.UseSqlServer("server=.;Database=RwaMovies;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
+});
 
 var app = builder.Build();
 
@@ -24,6 +35,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Genre}/{action=Index}/{id?}");
+    pattern: "{controller=Video}/{action=Index}/{id?}");
 
 app.Run();
