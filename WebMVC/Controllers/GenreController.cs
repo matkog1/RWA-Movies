@@ -52,16 +52,20 @@ namespace WebMVC.Controllers
         // GET: GenreController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(_service.GetById(id)); 
         }
 
         // POST: GenreController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Genre Genre)
         {
             try
             {
+                var dbGenre = _service.GetById(id);
+                dbGenre.Name = Genre.Name;
+                dbGenre.Description = Genre.Description;
+                _service.Update(dbGenre);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -73,16 +77,17 @@ namespace WebMVC.Controllers
         // GET: GenreController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View(_service.GetById(id));
         }
 
         // POST: GenreController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Genre genre)
         {
             try
             {
+                _service.DeleteById(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

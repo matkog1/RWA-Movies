@@ -51,16 +51,19 @@ namespace WebMVC.Controllers
         // GET: TagController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(_service.GetById(id));
         }
 
         // POST: TagController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Tag tag)
         {
             try
             {
+                var dbTag = _service.GetById(id);
+                dbTag.Name = tag.Name;
+                _service.Update(dbTag);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -72,16 +75,17 @@ namespace WebMVC.Controllers
         // GET: TagController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View(_service.GetById(id));
         }
 
         // POST: TagController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Tag tag)
         {
             try
             {
+                _service.DeleteById(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

@@ -51,16 +51,30 @@ namespace WebMVC.Controllers
         // GET: VideoController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(_service.GetById(id));
         }
 
         // POST: VideoController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Video video)
         {
             try
             {
+                var dbVideo = _service.GetById(id);
+                
+                dbVideo.Id = video.Id;
+                dbVideo.Name = video.Name;
+                dbVideo.Description = video.Description;
+                dbVideo.GenreId = video.GenreId;    
+                dbVideo.Genre = video.Genre;
+                dbVideo.TotalSeconds = video.TotalSeconds;
+                dbVideo.StreamingUrl = video.StreamingUrl;
+                dbVideo.Image = video.Image;
+                dbVideo.ImageId = video.ImageId;
+                dbVideo.CreatedAt = video.CreatedAt;
+
+                _service.Update(dbVideo);
                 return RedirectToAction(nameof(Index));
             }
             catch

@@ -51,16 +51,26 @@ namespace WebMVC.Controllers
         // GET: UserController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(_service.GetById(id));
         }
 
         // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, User user)
         {
             try
             {
+                var dbUser = _service.GetById(id);
+                dbUser.Username = user.Username;
+                dbUser.FirstName = user.FirstName;
+                dbUser.LastName = user.LastName;
+                dbUser.Email = user.Email;
+                dbUser.IsConfirmed = user.IsConfirmed;
+                dbUser.CreatedAt = user.CreatedAt;
+                dbUser.DeletedAt = user.DeletedAt;
+                dbUser.CountryOfResidenceId = user.CountryOfResidenceId;
+                _service.Update(dbUser);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -72,16 +82,17 @@ namespace WebMVC.Controllers
         // GET: UserController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View(_service.GetById(id));
         }
 
         // POST: UserController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, User user)
         {
             try
             {
+                _service.DeleteById(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
