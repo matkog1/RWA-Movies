@@ -32,7 +32,7 @@ public partial class RwaMoviesContext : DbContext
     public virtual DbSet<VideoTag> VideoTags { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:RwaMoviesConnStr");
+        => optionsBuilder.UseSqlServer("server=.;Database=RwaMovies;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

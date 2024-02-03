@@ -28,8 +28,12 @@ namespace BLayer.Service
 
         public Genre? Add(Genre genre)
         {
-           _repo.Add(genre);
-           return genre;
+           if (genre != null)
+            {
+                _repo.Add(genre);
+                return genre;
+            }
+           return new Genre();
         }
 
         public Genre? Update(Genre genre)
