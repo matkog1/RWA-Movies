@@ -2,22 +2,25 @@
 using DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WebMVC.Controllers
 {
     public class VideoController : Controller
     {
         // GET: VideoController
-        private ServiceVideo _service;
+        private ServiceVideo _serviceVideo;
+        private ServiceGenre _serviceGenre;
 
-        public VideoController(ServiceVideo service)
+        public VideoController(ServiceVideo serviceVideo, ServiceGenre serviceGenre)
         {
-            _service = service;
+            _serviceVideo = serviceVideo;
+            _serviceGenre = serviceGenre;
         }
 
         public ActionResult Index()
         {
-            return View(_service.GetAll());
+            return View(_serviceVideo.GetAll());
         }
 
         // GET: VideoController/Details/5
@@ -29,6 +32,8 @@ namespace WebMVC.Controllers
         // GET: VideoController/Create
         public ActionResult Create()
         {
+            var dbGenres = _serviceGenre.GetAll();
+            ViewBag.GenreId = new SelectList(dbGenres, "Id", "Name");
             return View();
         }
 
@@ -39,7 +44,8 @@ namespace WebMVC.Controllers
         {
             try
             {
-                _service.Add(video);
+                int selectedGenreId = video.GenreId;
+                _serviceVideo.Add(video);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -51,7 +57,9 @@ namespace WebMVC.Controllers
         // GET: VideoController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View(_service.GetById(id));
+            var dbGenres = _serviceGenre.GetAll();
+            ViewBag.GenreId = new SelectList(dbGenres, "Id", "Name");
+            return View(_serviceVideo.GetById(id));
         }
 
         // POST: VideoController/Edit/5
@@ -61,21 +69,23 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var dbVideo = _service.GetById(id);
-                
-                dbVideo.Id = video.Id;
-                dbVideo.Name = video.Name;
-                dbVideo.Description = video.Description;
-                dbVideo.GenreId = video.GenreId;    
-                dbVideo.Genre = video.Genre;
-                dbVideo.TotalSeconds = video.TotalSeconds;
-                dbVideo.StreamingUrl = video.StreamingUrl;
-                dbVideo.Image = video.Image;
-                dbVideo.ImageId = video.ImageId;
-                dbVideo.CreatedAt = video.CreatedAt;
-
-                _service.Update(dbVideo);
+                var foundVideo = _serviceVideo.GetById(id);
+                if (foundVideo != null)
+                {
+                    foundVideo.Id = video.Id;
+                    foundVideo.Name = video.Name;
+                    foundVideo.Description = video.Description;
+                    foundVideo.GenreId = video.GenreId;
+                    foundVideo.Genre = video.Genre;
+                    foundVideo.TotalSeconds = video.TotalSeconds;
+                    foundVideo.StreamingUrl = video.StreamingUrl;
+                    foundVideo.Image = video.Image;
+                    foundVideo.ImageId = video.ImageId;
+                    foundVideo.CreatedAt = video.CreatedAt;
+                    _serviceVideo.Update(foundVideo);
+                }
                 return RedirectToAction(nameof(Index));
+
             }
             catch
             {
@@ -92,10 +102,11 @@ namespace WebMVC.Controllers
         // POST: VideoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Video video)
         {
             try
             {
+                _serviceVideo.DeleteById(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Users</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,12 +12,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeletedAt)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Username)
             </th>
@@ -31,22 +25,10 @@
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PwdHash)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PwdSalt)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Phone)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsConfirmed)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecurityToken)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CountryOfResidence)
+                @Html.DisplayNameFor(model => model.CountryOfResidenceId)
             </th>
             <th></th>
         </tr>
@@ -54,12 +36,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeletedAt)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Username)
             </td>
@@ -73,22 +49,10 @@
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PwdHash)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PwdSalt)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Phone)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsConfirmed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecurityToken)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CountryOfResidence.Code)
+                @Html.DisplayFor(modelItem => item.CountryOfResidenceId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -61,11 +61,18 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var dbCountry = _service.GetById(id);
-                dbCountry.Code = country.Code;
-                dbCountry.Name = country.Name;  
-                _service.Update(dbCountry);
-                return RedirectToAction(nameof(Index));
+                var foundCountry = _service.GetById(id);
+                if (foundCountry != null)
+                {
+                    foundCountry.Code = country.Code;
+                    foundCountry.Name = country.Name;
+                    _service.Update(foundCountry);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
             catch
             {

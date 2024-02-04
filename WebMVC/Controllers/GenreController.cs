@@ -62,11 +62,15 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var dbGenre = _service.GetById(id);
-                dbGenre.Name = Genre.Name;
-                dbGenre.Description = Genre.Description;
-                _service.Update(dbGenre);
+                var foundGenre = _service.GetById(id);
+                if (foundGenre != null)
+                {
+                   foundGenre.Name = Genre.Name;
+                   foundGenre.Description = Genre.Description;
+                   _service.Update(foundGenre);
+                }
                 return RedirectToAction(nameof(Index));
+               
             }
             catch
             {
