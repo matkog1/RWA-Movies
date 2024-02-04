@@ -61,9 +61,12 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var dbTag = _service.GetById(id);
-                dbTag.Name = tag.Name;
-                _service.Update(dbTag);
+                var foundTag = _service.GetById(id);
+                if (foundTag != null)
+                {
+                    foundTag.Name = tag.Name;
+                    _service.Update(foundTag);
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch

@@ -2,22 +2,28 @@
 using DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Utils;
 
 namespace WebMVC.Controllers
 {
     public class UserController : Controller
     {
         // GET: UserController
-        private ServiceUser _service;
+        private ServiceUser _serviceUser;
+        private ServiceCountry _serviceCountry;
 
-        public UserController(ServiceUser service)
+        public UserController(ServiceUser serviceuser, ServiceCountry serviceCountry)
         {
-            _service = service;
+            _serviceUser = serviceuser;
+            _serviceCountry = serviceCountry;
         }
 
         public ActionResult Index()
         {
-            return View(_service.GetAll());
+            return View(_serviceUser.GetAll());
         }
 
         // GET: UserController/Details/5
@@ -29,20 +35,37 @@ namespace WebMVC.Controllers
         // GET: UserController/Create
         public ActionResult Create()
         {
+            var dbCountries = _serviceCountry.GetAll();
+            ViewBag.CountryOfResidenceId = new SelectList(dbCountries, "Id", "Name");
             return View();
         }
 
-        // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(User user)
         {
             try
             {
-                _service.Add(user);
-                return RedirectToAction(nameof(Index));
+                
+                (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();
+                string hashedPassword = SecurityUtils.HashPassword(user.PwdHash, salt);
+
+                user.PwdHash = hashedPassword;
+                user.PwdSalt = saltString;
+                int selectedCountryId = user.CountryOfResidenceId;
+                var userExists = _serviceUser?.GetAll()?.FirstOrDefault(g => g.Username.ToLower() == user.Username.ToLower());
+
+                if (userExists != null)
+                {
+                    return View(user);
+                }
+                else
+                {
+                    _serviceUser.Add(user);
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            catch
+            catch (Exception)
             {
                 return View();
             }
@@ -51,7 +74,9 @@ namespace WebMVC.Controllers
         // GET: UserController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View(_service.GetById(id));
+            var dbCountryId = _serviceCountry.GetAll();
+            ViewBag.CountryOfResidenceId = new SelectList(dbCountryId, "Id", "Name");
+            return View(_serviceUser.GetById(id));
         }
 
         // POST: UserController/Edit/5
@@ -61,17 +86,29 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var dbUser = _service.GetById(id);
-                dbUser.Username = user.Username;
-                dbUser.FirstName = user.FirstName;
-                dbUser.LastName = user.LastName;
-                dbUser.Email = user.Email;
-                dbUser.IsConfirmed = user.IsConfirmed;
-                dbUser.CreatedAt = user.CreatedAt;
-                dbUser.DeletedAt = user.DeletedAt;
-                dbUser.CountryOfResidenceId = user.CountryOfResidenceId;
-                _service.Update(dbUser);
+                var foundUser = _serviceUser.GetById(id);
+                if (foundUser != null)
+                {
+                    foundUser.Username = user.Username;
+                    foundUser.FirstName = user.FirstName;
+                    foundUser.LastName = user.LastName;
+                    foundUser.PwdHash = user.PwdHash;
+                    foundUser.PwdSalt = user.PwdSalt;
+                    foundUser.Email = user.Email;
+                    foundUser.Phone = user.Phone;
+                    foundUser.IsConfirmed = user.IsConfirmed;
+                    foundUser.CountryOfResidenceId = user.CountryOfResidenceId;
+                    if (!string.IsNullOrEmpty(user.PwdHash))
+                    {
+                        (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();
+                        string hashedPassword = SecurityUtils.HashPassword(user.PwdHash, salt);
+                        foundUser.PwdHash = hashedPassword;
+                        foundUser.PwdSalt = saltString;
+                    }
+                    _serviceUser.Update(foundUser);
+                }
                 return RedirectToAction(nameof(Index));
+               
             }
             catch
             {
@@ -82,7 +119,7 @@ namespace WebMVC.Controllers
         // GET: UserController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View(_service.GetById(id));
+            return View(_serviceUser.GetById(id));
         }
 
         // POST: UserController/Delete/5
@@ -92,7 +129,7 @@ namespace WebMVC.Controllers
         {
             try
             {
-                _service.DeleteById(id);
+                _serviceUser.DeleteById(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
