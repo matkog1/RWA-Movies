@@ -3,11 +3,9 @@ using DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Utils;
 
-namespace WebMVC.Controllers
+namespace PublicMVC.Controllers
 {
     public class UserController : Controller
     {
@@ -46,7 +44,7 @@ namespace WebMVC.Controllers
         {
             try
             {
-                
+
                 (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();
                 string hashedPassword = SecurityUtils.HashPassword(user.PwdHash, salt);
 
@@ -109,7 +107,7 @@ namespace WebMVC.Controllers
                     _serviceUser.Update(foundUser);
                 }
                 return RedirectToAction(nameof(Index));
-               
+
             }
             catch
             {
