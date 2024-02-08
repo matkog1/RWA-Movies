@@ -3,6 +3,7 @@ using DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace WebMVC.Controllers
 {
@@ -11,17 +12,29 @@ namespace WebMVC.Controllers
         // GET: VideoController
         private ServiceVideo _serviceVideo;
         private ServiceGenre _serviceGenre;
+        private ServiceImage _serviceImage;
 
-        public VideoController(ServiceVideo serviceVideo, ServiceGenre serviceGenre)
+        public VideoController(ServiceVideo serviceVideo, ServiceGenre serviceGenre, ServiceImage serviceImage)
         {
             _serviceVideo = serviceVideo;
             _serviceGenre = serviceGenre;
+            _serviceImage = serviceImage;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int page = 1, int pageSize = 5)
         {
-            return View(_serviceVideo.GetAll());
+            var allVideos = _serviceVideo.GetAll();
+            var videosWithDetails = allVideos.Select(video =>
+            {
+                var genre = _serviceGenre.GetById(video.GenreId);
+                video.Genre = genre;
+                return video;
+            });
+ 
+            var paginatedVideos = PaginatedList<Video>.Create(videosWithDetails, page, pageSize);
+            return View(paginatedVideos);
         }
+
 
         // GET: VideoController/Details/5
         public ActionResult Details(int id)
@@ -32,8 +45,10 @@ namespace WebMVC.Controllers
         // GET: VideoController/Create
         public ActionResult Create()
         {
+            var dbImages = _serviceImage.GetAll();
             var dbGenres = _serviceGenre.GetAll();
             ViewBag.GenreId = new SelectList(dbGenres, "Id", "Name");
+            ViewBag.ImageId = new SelectList(dbImages, "Id", "Content");
             return View();
         }
 
@@ -57,8 +72,10 @@ namespace WebMVC.Controllers
         // GET: VideoController/Edit/5
         public ActionResult Edit(int id)
         {
+            var dbImages = _serviceImage.GetAll();
             var dbGenres = _serviceGenre.GetAll();
             ViewBag.GenreId = new SelectList(dbGenres, "Id", "Name");
+            ViewBag.ImageId = new SelectList(dbImages , "Id", "Content");
             return View(_serviceVideo.GetById(id));
         }
 
@@ -96,7 +113,10 @@ namespace WebMVC.Controllers
         // GET: VideoController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var video = _serviceVideo.GetById(id);
+            var genreName = _serviceGenre.GetById(video.GenreId).Name;
+            ViewBag.Genre = genreName ?? "tzes";
+            return View(video);
         }
 
         // POST: VideoController/Delete/5

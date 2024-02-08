@@ -1,6 +1,7 @@
 using BLayer.Service;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +16,16 @@ builder.Services.AddScoped<ServiceTag>();
 builder.Services.AddScoped<ServiceVideo>();
 builder.Services.AddScoped<ServiceUser>();
 builder.Services.AddScoped<ServiceCountry>();
+builder.Services.AddScoped<ServiceVideoTag>();
+builder.Services.AddScoped<ServiceImage>();
 
+builder.Services.AddControllers().AddJsonOptions(x =>
+x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
 {
-    options.UseSqlServer("server=.;Database=RwaMovies;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
+    options.UseSqlServer("name=ConnectionStrings:RwaMoviesConnStr");
 });
 
 var app = builder.Build();

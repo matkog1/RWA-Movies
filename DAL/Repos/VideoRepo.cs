@@ -1,4 +1,5 @@
 ﻿using DAL.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace DAL.Repos
             _context = context;
         }
 
-        public IEnumerable<Video>? GetAll() => _context?.Videos;
+        public IEnumerable<Video>? GetAll() => _context?.Videos.Include(v => v.VideoTags).ThenInclude(vt => vt.Tag).ToList();
 
         public Video? GetById(int id) => GetAll()?.FirstOrDefault(x => x.Id == id);
 
@@ -55,14 +56,14 @@ namespace DAL.Repos
 
         public void DeleteById(int id)
         {
-            Video? genre = GetById(id);
-            if (genre == null)
+            Video? video = GetById(id);
+            if (video == null)
             {
-                throw new ArgumentNullException(nameof(genre), "Video not found");
+                throw new ArgumentNullException(nameof(video), "Video not found");
             }
             else
             {
-                _context.Videos.Remove(genre);
+                _context.Videos.Remove(video);
                 _context.SaveChanges();
             }
         }
