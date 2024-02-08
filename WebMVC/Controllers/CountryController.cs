@@ -2,22 +2,30 @@
 using DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Printing;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace WebMVC.Controllers
 {
     public class CountryController : Controller
     {
-        private ServiceCountry _service;
+        private ServiceCountry _serviceCountry;
 
-        public CountryController(ServiceCountry service)
+        public CountryController(ServiceCountry serviceCountry)
         {
-            _service = service;
+            _serviceCountry = serviceCountry;
         }
 
+
         // GET: CountryController
-        public ActionResult Index()
+        public ActionResult Index(int page = 1, int pageSize = 5)
         {
-            return View(_service.GetAll());
+            var allCountries = _serviceCountry.GetAll();
+
+
+            var paginatedVideos = PaginatedList<Country>.Create(allCountries, page, pageSize);
+            return View(paginatedVideos);
         }
 
         // GET: CountryController/Details/5
@@ -39,7 +47,7 @@ namespace WebMVC.Controllers
         {
             try
             {
-                _service.Add(country);
+                _serviceCountry.Add(country);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -51,7 +59,7 @@ namespace WebMVC.Controllers
         // GET: CountryController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View(_service.GetById(id));
+            return View(_serviceCountry.GetById(id));
         }
 
         // POST: CountryController/Edit/5
@@ -61,12 +69,12 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var foundCountry = _service.GetById(id);
+                var foundCountry = _serviceCountry.GetById(id);
                 if (foundCountry != null)
                 {
                     foundCountry.Code = country.Code;
                     foundCountry.Name = country.Name;
-                    _service.Update(foundCountry);
+                    _serviceCountry.Update(foundCountry);
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -83,7 +91,7 @@ namespace WebMVC.Controllers
         // GET: CountryController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View(_service.GetById(id));
+            return View(_serviceCountry.GetById(id));
         }
 
         // POST: CountryController/Delete/5
@@ -93,7 +101,7 @@ namespace WebMVC.Controllers
         {
             try
             {
-                _service.DeleteById(id);
+                _serviceCountry.DeleteById(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

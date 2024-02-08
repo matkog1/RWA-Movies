@@ -16,19 +16,19 @@ namespace WebMVC.Controllers
         }
 
         // GET: GenreController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             return View(_service.GetAll());
         }
 
         // GET: GenreController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
             return View();
         }
 
         // GET: GenreController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
             return View();
         }
@@ -36,7 +36,7 @@ namespace WebMVC.Controllers
         // POST: GenreController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Genre genre)
+        public async Task<ActionResult> Create(Genre genre)
         {
             try
             {
@@ -50,27 +50,27 @@ namespace WebMVC.Controllers
         }
 
         // GET: GenreController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View(_service.GetById(id)); 
+            return View(_service.GetById(id));
         }
 
         // POST: GenreController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Genre Genre)
+        public async Task<ActionResult> Edit(int id, Genre Genre)
         {
             try
             {
                 var foundGenre = _service.GetById(id);
                 if (foundGenre != null)
                 {
-                   foundGenre.Name = Genre.Name;
-                   foundGenre.Description = Genre.Description;
-                   _service.Update(foundGenre);
+                    foundGenre.Name = Genre.Name;
+                    foundGenre.Description = Genre.Description;
+                    _service.Update(foundGenre);
                 }
                 return RedirectToAction(nameof(Index));
-               
+
             }
             catch
             {
@@ -79,7 +79,7 @@ namespace WebMVC.Controllers
         }
 
         // GET: GenreController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             return View(_service.GetById(id));
         }
@@ -87,7 +87,7 @@ namespace WebMVC.Controllers
         // POST: GenreController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Genre genre)
+        public async Task<ActionResult> Delete(int id, Genre genre)
         {
             try
             {

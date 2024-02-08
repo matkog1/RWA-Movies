@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Drawing.Printing;
 
 namespace WebMVC.Controllers
 {
@@ -21,20 +22,41 @@ namespace WebMVC.Controllers
             _serviceImage = serviceImage;
         }
 
-        public ActionResult Index(int page = 1, int pageSize = 5)
+        public ActionResult Index(string searchString, int genreId, int page = 1, int pageSize = 5)
         {
+            // Get all videos
             var allVideos = _serviceVideo.GetAll();
+
+            // Filter videos by search string
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                allVideos = allVideos.Where(video => video.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Filter videos by genre
+            if (genreId != 0)
+            {
+                allVideos = allVideos.Where(video => video.GenreId == genreId);
+            }
+
+            // Populate genre details for each video
             var videosWithDetails = allVideos.Select(video =>
             {
                 var genre = _serviceGenre.GetById(video.GenreId);
                 video.Genre = genre;
                 return video;
             });
- 
+
+            // Create paginated list
             var paginatedVideos = PaginatedList<Video>.Create(videosWithDetails, page, pageSize);
+
+            // Retrieve all genres
+            var allGenres = _serviceGenre.GetAll();
+
+            // Pass paginated list and genres to the view
+            ViewBag.Genres = allGenres;
             return View(paginatedVideos);
         }
-
 
         // GET: VideoController/Details/5
         public ActionResult Details(int id)
@@ -115,7 +137,7 @@ namespace WebMVC.Controllers
         {
             var video = _serviceVideo.GetById(id);
             var genreName = _serviceGenre.GetById(video.GenreId).Name;
-            ViewBag.Genre = genreName ?? "tzes";
+            ViewBag.Genre = genreName;
             return View(video);
         }
 
