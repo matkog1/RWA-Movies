@@ -107,6 +107,15 @@ namespace WebMVC.Controllers
                     foundUser.Email = user.Email;
                     foundUser.Phone = user.Phone;
                     foundUser.IsConfirmed = user.IsConfirmed;
+                    foundUser.CountryOfResidenceId = user.CountryOfResidenceId;
+                    //ne prikazuje password ako vec postoji, rijesiti bug
+                    if (!string.IsNullOrEmpty(user.PwdHash))
+                    {
+                        (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();
+                        string hashedPassword = SecurityUtils.HashPassword(user.PwdHash, salt);
+                        foundUser.PwdHash = hashedPassword;
+                        foundUser.PwdSalt = saltString;
+                    }
                     _serviceUser.Update(foundUser);
                 }
                 return RedirectToAction(nameof(Index));
