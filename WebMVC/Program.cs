@@ -14,11 +14,12 @@ builder.Services.AddScoped<ServiceVideo>();
 builder.Services.AddScoped<ServiceCountry>();
 builder.Services.AddScoped<ServiceUser>();
 builder.Services.AddScoped<ServiceTag>();
+builder.Services.AddScoped<ServiceImage>();
 
 
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
 {
-    options.UseSqlServer("server=.;Database=RwaMovies;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
+    options.UseSqlServer("name=ConnectionStrings:RwaMoviesConnStr");
 });
 
 var app = builder.Build();
@@ -36,6 +37,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Genre}/{action=Index}/{id?}");
+    pattern: "{controller=User}/{action=Index}/{id?}");
 
 app.Run();

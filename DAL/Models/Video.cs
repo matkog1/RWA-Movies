@@ -9,10 +9,8 @@ public partial class Video
     public int Id { get; set; }
 
     public DateTime CreatedAt { get; set; }
-    [Required]
     public string Name { get; set; } = null!;
-    [Required]
-    public string? Description { get; set; }
+    public string? Description { get; set; } 
     [Required]
     public int GenreId { get; set; }
 
@@ -26,5 +24,6 @@ public partial class Video
 
     public virtual Image? Image { get; set; }
 
-    public virtual ICollection<VideoTag> VideoTags { get; } = new List<VideoTag>();
+    public virtual ICollection<VideoTag> VideoTags { get; set; } = new List<VideoTag>();
+
 }

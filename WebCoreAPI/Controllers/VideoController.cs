@@ -7,8 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using DAL.APIRequests;
 using DAL.APIResponse;
+using System.Linq;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Azure;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,54 +21,37 @@ namespace WebCoreAPI.Controllers
     [ApiController]
     public class VideoController : ControllerBase
     {
-        private ServiceVideo _service;
 
-        private  ServiceVideo _videoService;
-        private  ServiceTag _tagService;
-        private  ServiceGenre _genreService;
-        private  ServiceImage _imageService;
+        private readonly ServiceVideo _videoService;
+        private readonly ServiceTag _tagService;
+        private readonly ServiceGenre _genreService;
+        private readonly ServiceVideoTag _videoTagService;
+        private readonly ServiceImage _imageService;
 
-        public VideoController(ServiceVideo service, ServiceTag tagService, ServiceImage imageService, ServiceGenre genreService)
+        public VideoController(ServiceVideo videoService, ServiceTag tagService, ServiceGenre genreService, ServiceVideoTag videoTagService, ServiceImage imageService)
         {
-            _service = service ?? throw new ArgumentNullException(nameof(service));
-            _genreService = genreService ?? throw new ArgumentNullException(nameof(_genreService));
-            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
-            _tagService = tagService ?? throw new ArgumentNullException(nameof(tagService));
+            _videoService = videoService;
+            _tagService = tagService;
+            _genreService = genreService;
+            _videoTagService = videoTagService;
+            _imageService = imageService;
         }
 
         [HttpGet("[action]")]
         [AllowAnonymous]
-        public ActionResult<IEnumerable<Video>> Search(int page, int size, string searchName, string sortBy, string orderingDirection)
+        public ActionResult<IEnumerable<Video>> Search(string searchName)
         {
-            //ovo implementirati
-            return Ok("Ok");
-        }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<RequestVideo>> GetAllVideos()
-        {
             try
             {
-                var allVideos = _service.GetAll();
+                var allVideos = _videoService.GetAll();
 
-                IList<RequestVideo> listOfVideos = allVideos.Select(video => new RequestVideo
+                if (!string.IsNullOrEmpty(searchName))
                 {
-                    Name = video.Name,
-                    Description = video.Description,
-                    GenreId = video.GenreId,
-                    TotalSeconds = video.TotalSeconds,
-                    StreamingUrl = video.StreamingUrl,
-                    Genre = video.Genre,
-                    Image = video.Image,
-
-                }).ToList();
-
-                if (!listOfVideos.Any())
-                {
-                    return NotFound($"Currently there is no Videos in database!");
+                    allVideos = allVideos.Where(v => v.Name.ToLower() == searchName.ToLower() || v.Name.ToLower().Contains(searchName.ToLower()));
                 }
 
-                return Ok(listOfVideos);
+                return Ok(allVideos);
             }
             catch (Exception)
             {
@@ -73,28 +59,87 @@ namespace WebCoreAPI.Controllers
             }
         }
 
+
+
+        [HttpGet("[action]")]
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<Video>> SortBy(string sortBy, string orderingDirection)
+        {
+            var allVideos = _videoService.GetAll();
+
+         
+            // Apply sorting if sortBy and orderingDirection are provided
+            if (!string.IsNullOrEmpty(sortBy) && !string.IsNullOrEmpty(orderingDirection))
+            {
+                switch (sortBy.ToLower())
+                {
+                    case "name":
+                        allVideos = orderingDirection.ToLower() == "asc" ? allVideos.OrderBy(v => v.Name) : allVideos.OrderByDescending(v => v.Name);
+                        break;
+                    case "id":
+                        allVideos = orderingDirection.ToLower() == "asc" ? allVideos.OrderBy(v => v.Id) : allVideos.OrderByDescending(v => v.Id);
+                        break;
+                    case "totaltime":
+                        allVideos = orderingDirection.ToLower() == "asc" ? allVideos.OrderBy(v => v.TotalSeconds) : allVideos.OrderByDescending(v => v.TotalSeconds);
+                        break;
+                    default:
+                        // Handle invalid sortBy parameter
+                        return BadRequest($"Invalid sortBy parameter. Must be 'name', 'id', or 'totaltime'.");
+                }
+            }
+
+            // Return the sorted and filtered list of videos
+            return Ok(allVideos);
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<Video>> GetAllVideos(int pageNumber = 1, int pageSize = 5)
+        {
+            try
+            {
+                var allVideos = _videoService.GetAll();
+                int totalVideos = allVideos.Count();
+                int totalPages = (int)Math.Ceiling((double)totalVideos / pageSize);
+                if (pageNumber < 1 || pageNumber > totalPages)
+                {
+                    return BadRequest("Invalid page number.");
+                }
+
+                int skipCount = (pageNumber - 1) * pageSize;
+
+                var paginatedVideos = allVideos.Skip(skipCount).Take(pageSize).ToList();
+                return Ok(new { Videos = paginatedVideos, TotalPages = totalPages, CurrentPage = pageNumber });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
         public ActionResult<RequestVideo> GetVideo(int id)
         {
             try
             {
-                var videoById = _service.GetById(id);
+                var videoById = _videoService.GetById(id);
                 if (videoById == null)
                 {
                     return NotFound($"Video with ID number: {id} not found.");
                 }
                 else
                 {
-                    var video = new RequestVideo
+                    var video = new Video
                     {
+                        Id = videoById.Id,
                         Name = videoById.Name,
                         Description = videoById.Description,
+                        ImageId = videoById.ImageId,
                         GenreId = videoById.GenreId,
                         TotalSeconds = videoById.TotalSeconds,
                         StreamingUrl = videoById.StreamingUrl,
-                        Genre = videoById.Genre,
-                        Image = videoById.Image,
+                        VideoTags = videoById.VideoTags
                     };
                     return Ok(video);
                 }
@@ -108,41 +153,47 @@ namespace WebCoreAPI.Controllers
 
         // POST api/<GenreController>
         [HttpPost]
-        public ActionResult<RequestVideo> Post(RequestVideo request)
+        public ActionResult Post(RequestVideo video)
         {
-            try
+            string[] tags = video.NewTags.Split(',');
+            var allTags = _tagService.GetAll();
+            var existingTags = allTags.Where(t => tags.Contains(t.Name));
+
+
+            if (video == null)
             {
-                if (request == null)
-                {
-                    BadRequest($"Request object is null.");
-                }
+                BadRequest($"Request object is null.");
+            }
 
-                var videoExists = _service?.GetAll()?.FirstOrDefault(g => g.Name.ToLower() == request.Name.ToLower());
+            var videoExists = _videoService?.GetAll()?.FirstOrDefault(g => g.Name.ToLower() == video.Name.ToLower());
 
-                if (videoExists != null)
+            if (videoExists != null)
+            {
+                return Conflict($"Video with the name '{video.Name}' already exists");
+            }
+            
+            var newVideo = new Video
+            {
+                Name = video.Name,
+                Description = video.Description,
+                GenreId = video.GenreId,
+                TotalSeconds = video.TotalSeconds,
+                StreamingUrl = video.StreamingUrl,
+                ImageId = video.ImageId,
+                VideoTags = existingTags.Select(t => new VideoTag { TagId = t.Id }).ToList()
+            };
+
+            foreach (var tag in tags)
+            {
+                if (!allTags.Any(t => t.Name == tag))
                 {
-                    return Conflict($"Video with the name '{request.Name}' already exists");
-                }
-                else
-                {
-                    var video = new Video
-                    {
-                        Name = request.Name,
-                        Description = request.Description,
-                        GenreId = request.GenreId,
-                        TotalSeconds = request.TotalSeconds,
-                        StreamingUrl = request.StreamingUrl,
-                        Genre = request.Genre,
-                        Image = request.Image,
-                    };
-                    _service.Add(video);
-                    return Ok(request);
+                    var newTag = new Tag { Name = tag };
+                    newVideo.VideoTags.Add(new VideoTag { Tag = newTag });
                 }
             }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error");
-            }
+
+            _videoService.Add(newVideo);
+            return Ok(newVideo);
         }
 
         // PUT api/<GenreController>/5
@@ -156,7 +207,7 @@ namespace WebCoreAPI.Controllers
                     BadRequest($"Request object is null.");
                 }
 
-                var foundVideo = _service.GetById(id);
+                var foundVideo = _videoService.GetById(id);
 
                 if (foundVideo == null)
                 {
@@ -169,8 +220,8 @@ namespace WebCoreAPI.Controllers
                     foundVideo.GenreId = request.GenreId;
                     foundVideo.TotalSeconds = request.TotalSeconds;
                     foundVideo.StreamingUrl = request.StreamingUrl;
-                    foundVideo.Genre = request.Genre;
-                    _service.Update(foundVideo);
+                    foundVideo.ImageId = request.ImageId;
+                    _videoService.Update(foundVideo);
                     return Ok(foundVideo);
                 }
             }
@@ -193,27 +244,27 @@ namespace WebCoreAPI.Controllers
 
                 if (isNumeric)
                 {
-                    foundVideo = _service.GetById(id);
+                    foundVideo = _videoService.GetById(id);
                     if (foundVideo == null)
                     {
                         return NotFound($"Video: {foundVideo.Name} with ID  '{identifier}' not found!");
                     }
                     else
                     {
-                        _service.DeleteById(foundVideo.Id);
+                        _videoService.DeleteById(foundVideo.Id);
                         return Ok($"Video {foundVideo.Name} with ID {foundVideo.Id} has been deleted!");
                     }
                 }
                 else
                 {
-                    foundVideo = _service.GetByName(identifier);
+                    foundVideo = _videoService.GetByName(identifier);
                     if (foundVideo == null)
                     {
                         return NotFound($"Video with ID or name '{identifier}' not found!");
                     }
                     else
                     {
-                        _service.DeleteByName(foundVideo.Name);
+                        _videoService.DeleteByName(foundVideo.Name);
                         return Ok($"Video {foundVideo.Name} has been deleted!");
                     }
                 }

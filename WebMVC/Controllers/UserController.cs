@@ -23,7 +23,16 @@ namespace WebMVC.Controllers
 
         public ActionResult Index()
         {
-            return View(_serviceUser.GetAll());
+            var dbUsers = _serviceUser.GetAll();
+
+            var usersWithCountry = dbUsers.Select(user =>
+            {
+                var country = _serviceCountry.GetById(user.CountryOfResidenceId).Name;
+                user.CountryOfResidence.Name = country;
+                return View(user);
+            });
+
+            return View(usersWithCountry);
         }
 
         // GET: UserController/Details/5
@@ -76,6 +85,7 @@ namespace WebMVC.Controllers
         {
             var dbCountryId = _serviceCountry.GetAll();
             ViewBag.CountryOfResidenceId = new SelectList(dbCountryId, "Id", "Name");
+
             return View(_serviceUser.GetById(id));
         }
 
@@ -98,6 +108,7 @@ namespace WebMVC.Controllers
                     foundUser.Phone = user.Phone;
                     foundUser.IsConfirmed = user.IsConfirmed;
                     foundUser.CountryOfResidenceId = user.CountryOfResidenceId;
+                    //ne prikazuje password ako vec postoji, rijesiti bug
                     if (!string.IsNullOrEmpty(user.PwdHash))
                     {
                         (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();

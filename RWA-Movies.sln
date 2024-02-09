@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMVC", "WebMVC\WebMVC.csp
 		{84D498B1-2996-42AA-847A-624F8B9C2822} = {84D498B1-2996-42AA-847A-624F8B9C2822}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicMVC", "PublicMVC\PublicMVC.csproj", "{40B98408-FC9E-42AD-BAC7-F8F75BFBA6CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{2D566E1F-86EB-42EE-BFC0-9AC427C58684}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D566E1F-86EB-42EE-BFC0-9AC427C58684}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D566E1F-86EB-42EE-BFC0-9AC427C58684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40B98408-FC9E-42AD-BAC7-F8F75BFBA6CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40B98408-FC9E-42AD-BAC7-F8F75BFBA6CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40B98408-FC9E-42AD-BAC7-F8F75BFBA6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40B98408-FC9E-42AD-BAC7-F8F75BFBA6CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
