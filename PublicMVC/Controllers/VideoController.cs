@@ -3,6 +3,8 @@ using DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
+using System.Drawing.Printing;
 
 namespace PublicMVC.Controllers
 {
@@ -11,16 +13,47 @@ namespace PublicMVC.Controllers
         // GET: VideoController
         private ServiceVideo _serviceVideo;
         private ServiceGenre _serviceGenre;
+        private ServiceImage _serviceImages;
 
-        public VideoController(ServiceVideo serviceVideo, ServiceGenre serviceGenre)
+        public VideoController(ServiceVideo serviceVideo, ServiceGenre serviceGenre, ServiceImage serviceImages)
         {
             _serviceVideo = serviceVideo;
             _serviceGenre = serviceGenre;
+            _serviceImages = serviceImages;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string videoNameFilter)
         {
-            return View(_serviceVideo.GetAll());
+            try
+            {
+                var images = _serviceImages.GetAll()?.ToList();
+                var videos = _serviceVideo.GetAll().ToList();
+                List<Video> videoList = new List<Video>();
+
+                if (images != null)
+                {
+                    foreach (var video in videos)
+                    {
+                        var image = images.FirstOrDefault(img => img.Id == video.ImageId);
+                        if (image != null)
+                        {
+                            video.Image = image;
+                        }
+                        videoList.Add(video);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(videoNameFilter))
+                {
+                    videoList = videoList.Where(video => video.Name.Contains(videoNameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                return View(videoList);
+            }
+            catch (Exception)
+            {
+                return View();
+            }
         }
 
         // GET: VideoController/Details/5

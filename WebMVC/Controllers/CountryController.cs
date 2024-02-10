@@ -22,8 +22,6 @@ namespace WebMVC.Controllers
         public ActionResult Index(int page = 1, int pageSize = 5)
         {
             var allCountries = _serviceCountry.GetAll();
-
-
             var paginatedVideos = PaginatedList<Country>.Create(allCountries, page, pageSize);
             return View(paginatedVideos);
         }
