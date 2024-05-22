@@ -1,4 +1,4 @@
-Video Streaming Service Web Application
+****Video Streaming Service Web Application****
 Overview
 This project is a web application designed for managing a video streaming service. It encompasses three main modules: integration with third-party services, administrative management, and public user access. The application is built using ASP.NET Core technologies to provide a robust and scalable solution for video content management.
 
