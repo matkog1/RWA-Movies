@@ -26,6 +26,8 @@ namespace BLayer.Service
         
         public User? GetByName(string name) => _repo.GetByName(name);
 
+        public Boolean ConfirmUser(string username, string password) => _repo.UserExists(username,password);
+
         public User? Add(User user)
         {
             if (user == null)

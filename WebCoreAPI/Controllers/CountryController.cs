@@ -66,6 +66,7 @@ namespace WebCoreAPI.Controllers
                 {
                     var country = new ResponseCountry
                     {
+                        Id = countryById.Id,
                         Code = countryById.Code,
                         Name = countryById.Name,
                     };

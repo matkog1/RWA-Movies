@@ -1,18 +1,110 @@
+/* Global Styles */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
+
+/* Body Styles */
+body {
+    background-color: #f8f9fa; /* Light gray background */
+    color: #333; /* Dark text color */
+    padding-top: 60px;
+}
+
+.container {
+    background-color: #fff; /* White container background */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow */
+}
+
+.navbar-brand {
+    color: #333; /* Dark text color */
+    background-color: #e3f2fd; /* Light blue navbar background */
+}
+
+.navbar-toggler-icon {
+    background-color: #333; /* Dark color for toggler icon */
+}
+
+.navbar-nav .nav-link {
+    color: white; /* White text color */
+}
+
+.form-control {
+    background-color: #f1f3f5; /* Light gray input background */
+    border: none;
+    border-bottom: 1px solid #ced4da; /* Light gray border */
+    color: #333; /* Dark text color */
+}
+
+    .form-control:focus {
+        background-color: #e9ecef; /* Lighter gray when focused */
+        border-color: #80bdff; /* Light blue border when focused */
+        color: #333; /* Dark text color */
+    }
+
+.btn-primary {
+    background-color: #007bff; /* Blue button color */
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+.text-danger {
+    color: #dc3545; /* Red text color for error messages */
+}
+
+/* Custom Styles for Login Page */
+.login-form {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #fff; /* White background for login form */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow */
+}
+
+    .login-form label {
+        color: #333; /* Dark text color */
+    }
+
+    .login-form .form-control {
+        background-color: #f1f3f5; /* Light gray input background */
+        border: 1px solid #ced4da; /* Light gray border */
+    }
+
+        .login-form .form-control:focus {
+            background-color: #e9ecef; /* Lighter gray when focused */
+            border-color: #80bdff; /* Light blue border when focused */
+            color: #333; /* Dark text color */
+        }
+
+    .login-form .btn-primary {
+        background-color: #007bff; /* Blue button color */
+        border: none;
+    }
+
+        .login-form .btn-primary:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+    .login-form .text-danger {
+        color: #dc3545; /* Red text color for error messages */
+    }

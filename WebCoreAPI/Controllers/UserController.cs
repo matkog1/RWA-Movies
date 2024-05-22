@@ -58,7 +58,7 @@ namespace WebCoreAPI.Controllers
 
         // GET api/<GenreController>/5
         [HttpGet("{id}")]
-        public ActionResult<RequestUser> GetUser(int id)
+        public ActionResult<ResponseUser> GetUser(int id)
         {
             try
             {
@@ -69,8 +69,9 @@ namespace WebCoreAPI.Controllers
                 }
                 else
                 {
-                    var user = new RequestUser
+                    var user = new ResponseUser
                     {
+                        Id = userById.Id,
                         FirstName = userById.FirstName,
                         LastName = userById.LastName,
                         Username = userById.Username,

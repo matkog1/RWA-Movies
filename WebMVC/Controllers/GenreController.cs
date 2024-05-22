@@ -41,7 +41,8 @@ namespace WebMVC.Controllers
             try
             {
                 _service.Add(genre);
-                return RedirectToAction(nameof(Index));
+                var url = Url.Action("Index", "Genre");
+                return Json(url);
             }
             catch
             {

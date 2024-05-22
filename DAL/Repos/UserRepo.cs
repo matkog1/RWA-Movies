@@ -23,6 +23,13 @@ namespace DAL.Repos
 
         public User? GetByName(string userName) => GetAll()?.FirstOrDefault(y => y.Username == userName);
 
+        public User? GetByPassword(string password) => GetAll()?.FirstOrDefault(y => y.PwdHash == password);
+
+        public bool UserExists(string userName, string password)
+        {
+            // Check if a user exists with the given username and password
+            return GetAll()?.Any(y => y.Username == userName && y.PwdHash == password) ?? false;
+        }
         public User? Add(User user)
         {
             if (user == null)

@@ -29,8 +29,8 @@ namespace WebMVC.Controllers
             {
                 var country = _serviceCountry.GetById(user.CountryOfResidenceId).Name;
                 user.CountryOfResidence.Name = country;
-                return View(user);
-            });
+                return user;
+            }).ToList();
 
             return View(usersWithCountry);
         }
@@ -102,30 +102,32 @@ namespace WebMVC.Controllers
                     foundUser.Username = user.Username;
                     foundUser.FirstName = user.FirstName;
                     foundUser.LastName = user.LastName;
-                    foundUser.PwdHash = user.PwdHash;
-                    foundUser.PwdSalt = user.PwdSalt;
                     foundUser.Email = user.Email;
                     foundUser.Phone = user.Phone;
                     foundUser.IsConfirmed = user.IsConfirmed;
                     foundUser.CountryOfResidenceId = user.CountryOfResidenceId;
-                    //ne prikazuje password ako vec postoji, rijesiti bug
+
                     if (!string.IsNullOrEmpty(user.PwdHash))
                     {
+                        // Generate new salt and hash the password
                         (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();
                         string hashedPassword = SecurityUtils.HashPassword(user.PwdHash, salt);
+
+                        // Update user's password
                         foundUser.PwdHash = hashedPassword;
                         foundUser.PwdSalt = saltString;
                     }
+
                     _serviceUser.Update(foundUser);
                 }
                 return RedirectToAction(nameof(Index));
-               
             }
             catch
             {
                 return View();
             }
         }
+
 
         // GET: UserController/Delete/5
         public ActionResult Delete(int id)

@@ -22,8 +22,6 @@ namespace WebMVC.Controllers
         public ActionResult Index(int page = 1, int pageSize = 5)
         {
             var allCountries = _serviceCountry.GetAll();
-
-
             var paginatedVideos = PaginatedList<Country>.Create(allCountries, page, pageSize);
             return View(paginatedVideos);
         }
@@ -43,12 +41,13 @@ namespace WebMVC.Controllers
         // POST: CountryController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Country country)
+        public async Task<ActionResult> Create(Country country)
         {
             try
             {
                 _serviceCountry.Add(country);
-                return RedirectToAction(nameof(Index));
+                var url = Url.Action("Index", "Country");
+                return Json(url);
             }
             catch
             {

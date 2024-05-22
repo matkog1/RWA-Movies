@@ -1,9 +1,13 @@
 ﻿using BLayer.Service;
+using Utils;
 using DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using PublicMVC.Models;
 using Utils;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PublicMVC.Controllers
 {
@@ -21,7 +25,7 @@ namespace PublicMVC.Controllers
 
         public ActionResult Index()
         {
-            return View(_serviceUser.GetAll());
+            return View("Login");
         }
 
         // GET: UserController/Details/5
@@ -29,6 +33,29 @@ namespace PublicMVC.Controllers
         {
             return View();
         }
+        public ActionResult Login(UserLogin userLogin)
+        {
+            try
+            {
+                var dbUser = _serviceUser.GetByName(userLogin.Username);
+                if (dbUser != null)
+                {
+                    string hashedPassword = SecurityUtils.HashPassword(userLogin.Password, Convert.FromBase64String(dbUser.PwdSalt));
+                    if (hashedPassword == dbUser.PwdHash)
+                    {
+                        ViewBag.UserLogged = userLogin.Username;
+                        return RedirectToAction("Index", "Video", new { username = userLogin.Username });
+                    }
+                }
+                ViewBag.LoginMessage = "Login unsuccessful. Please try again.";
+                return View(userLogin);
+            }
+            catch (Exception)
+            {
+                return View();
+            }
+        }
+
 
         // GET: UserController/Create
         public ActionResult Create()
@@ -44,7 +71,6 @@ namespace PublicMVC.Controllers
         {
             try
             {
-
                 (byte[] salt, string saltString) = SecurityUtils.GenerateSalt();
                 string hashedPassword = SecurityUtils.HashPassword(user.PwdHash, salt);
 
