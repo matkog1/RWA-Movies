@@ -23,8 +23,8 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@(item.Name ?? "N/A")</td>
+                <td>@(item.Description ?? "N/A")</td>
                 <td>
                     <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                 </td>
@@ -35,37 +35,3 @@
         }
     </tbody>
 </table>
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Edit genre
-            $(".edit-btn").click(function () {
-                var id = $(this).data("id");
-                $.get('@Url.Action("Edit", "Genre")', { id: id })
-                    .done(function (data) {
-                        console.log("Edit successful", data);
-                    })
-                    .fail(function () {
-                        console.error("Error occurred while editing genre.");
-                    });
-            });
-
-            // Delete genre
-            $(".delete-btn").click(function () {
-                var id = $(this).data("id");
-                if (confirm("Are you sure you want to delete this genre?")) {
-                    $.post('@Url.Action("Delete", "Genre")', { id: id })
-                        .done(function (data) {
-                            console.log("Delete successful", data);
-                        })
-                        .fail(function () {
-                            console.error("Error occurred while deleting genre.");
-                        });
-                }
-            });
-        });
-    </script>
-}
-
-
-}

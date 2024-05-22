@@ -140,3 +140,16 @@ REFERENCES [dbo].[Video] ([Id])
 GO
 ALTER TABLE [dbo].[VideoTag] CHECK CONSTRAINT [FK_VideoTag_Video]
 GO
+INSERT INTO [dbo].[Country](Code,Name) values ('HR','Croatia')
+GO
+INSERT INTO [dbo].[Genre](Name, Description) values ('Triler','Scary')
+GO
+INSERT INTO [dbo].[Image](Id,Content) values (1,'https://s3.amazonaws.com/static.rogerebert.com/uploads/movie/movie_poster/thriller-2019/large_Thriller_Poster.jpg');
+GO
+INSERT INTO [dbo].[Image](Id,Content) values (2,'https://m.media-amazon.com/images/M/MV5BMGEzZjdjMGQtZmYzZC00N2I4LThiY2QtNWY5ZmQ3M2ExZmM4XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg');
+GO
+INSERT INTO [dbo].[Image](Id,Content) values (3,'https://filmfare.wwmindia.com/content/2021/aug/best-comedy-movies-hollywood-were-the-millers.jpg');
+GO
+INSERT INTO [dbo].[Image](Id,Content) values (4,'https://hips.hearstapps.com/hmg-prod/images/the-incredibles-1529421699.jpg?crop=0.988xw:1.00xh;0.00518xw,0&resize=980');
+GO
+INSERT INTO [dbo].[Image](Id,Content) values (5,'https://ew.com/thmb/8qdSdjnIgWHj-b5c7xkQAT8Arlc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Netflix-drama-movies-032724-506959c285ca41a3be21595593bff2ae.jpg');

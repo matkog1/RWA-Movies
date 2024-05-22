@@ -46,20 +46,20 @@
 
         @if (Model.HasPreviousPage)
         {
-            <a href="@Url.Action("Index", new { page = Model.PageIndex - 1, pageSize = Model.PageSize })">Previous</a>
+            <a href="@Url.Action("Index", new { page = Model.PageIndex - 1, pageSize = Model.PageSize })" class="btn btn-primary">Previous</a>
         }
         else
         {
-            <span>Previous</span>
+            <span class="btn btn-primary">Previous</span>
         }
 
         @if (Model.HasNextPage)
         {
-            <a href="@Url.Action("Index", new { page = Model.PageIndex + 1, pageSize = Model.PageSize })">Next</a>
+            <a href="@Url.Action("Index", new { page = Model.PageIndex + 1, pageSize = Model.PageSize })" class="btn btn-primary">Next</a>
         }
         else
         {
-            <span>Next</span>
+            <span class="btn btn-primary">Next</span>
         }
     </div>
 </div>

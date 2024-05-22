@@ -41,12 +41,13 @@ namespace WebMVC.Controllers
         // POST: CountryController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Country country)
+        public async Task<ActionResult> Create(Country country)
         {
             try
             {
                 _serviceCountry.Add(country);
-                return RedirectToAction(nameof(Index));
+                var url = Url.Action("Index", "Country");
+                return Json(url);
             }
             catch
             {

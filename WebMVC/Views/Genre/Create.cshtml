@@ -22,15 +22,14 @@
                 <span class="text-danger"></span>
             </div>
             <div class="form-group">
+                <a asp-action="Index" class="btn btn-warning">Back to List</a>
                 <button type="submit" id="ajaxCreateButton" class="btn btn-primary">Create</button>
             </div>
             @Html.AntiForgeryToken()
         </form>
     </div>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{
@@ -41,16 +40,17 @@
             $('#ajaxCreateGenreForm').submit(function (event) {
                 event.preventDefault();
                 var formData = $(this).serialize()
+                debugger;
                 $.ajax({
                     url: '@Url.Action("Create","Genre")',
                     type: 'POST',
                     data: formData,
                     success: function (result) {
-                        alert("Ajax POST success");
+                        alert("Ajax - Genre created");
                         window.location.href = result;
                     },
                     error: function (xhr) {
-                        alert("Ajax POST error");
+                        alert("Ajax - Genre not created");
                     }
                 });
             });
