@@ -1,3 +1,4 @@
+
 # Video Streaming Service Web Application
 
 ## Overview
@@ -5,6 +6,10 @@
 This project is a web application designed for managing a video streaming service. It encompasses three main modules: integration with third-party services, administrative management, and public user access. The application is built using **ASP.NET Core** technologies to provide a robust and scalable solution for video content management.
 
 ## Modules
+### Testing steps
+Before starting please run the database script in Microsoft SqlServerManagment (SSMS). 
+Please check the connection string is valid.
+After that you can start the projects.
 
 ### Integration Module
 
